@@ -5,8 +5,3 @@ bpapi = Blueprint('api/v1', __name__, url_prefix='/api/v1')
 @bpapi.route("/")
 def home():
     return "Accueil"
-
-@bpapi.route('/upload', methods=['GET','POST'])
-def upload():
-    #Get the image
-    return "TODO : GET PICTURE"
