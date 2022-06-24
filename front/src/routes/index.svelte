@@ -1,33 +1,63 @@
 <script lang="ts">
   import { SvelteToast, toast } from "@zerodevx/svelte-toast"
 
-  const controller = new AbortController()
+  interface ServerResponse {
+    labelEmotion: string
+    arrayEmotion: Array<number>
+    idToNames: Record<number, string>
+  }
 
-  let image: HTMLImageElement | null
   let inputImg: HTMLInputElement
-  let serverResponse: string
+  let image: HTMLImageElement | null
+
+  let serverResponse: ServerResponse = {
+    labelEmotion: "",
+    arrayEmotion: [],
+    idToNames: {},
+  }
+
+  $: isValidServerResponse = () => {
+    return (
+      !!serverResponse.labelEmotion && serverResponse.arrayEmotion.length > 0
+    )
+  }
+
+  const getFileImage = (input: HTMLInputElement) => {
+    if (!input?.files || input.files.length == 0) return null
+    return input.files[0]
+  }
 
   function onFileSelected(evt: Event) {
     const reader = new FileReader()
-    const input = evt.target as HTMLInputElement
-    if (!input.files || !input.files.length) return
+    const fileImage = getFileImage(evt.target as HTMLInputElement)
+    if (!fileImage) {
+      return console.warn("No FileImage selected")
+    }
 
-    reader.readAsDataURL(input.files[0])
+    reader.readAsDataURL(fileImage)
     reader.onload = (e: Event) => {
       const tmpImage = new Image()
       const fileReader = e.target as FileReader
-      if (!fileReader || !fileReader.result) return
+      if (!fileReader || !fileReader.result) {
+        return console.warn("No image found")
+      }
 
       tmpImage.src = fileReader.result.toString()
       tmpImage.onload = () => {
         toast.pop()
 
         if (!isImgValid(tmpImage)) {
-          reset()
+          console.warn("Invalid image selected")
         } else {
           image = tmpImage
           sendImageServer()
         }
+      }
+      tmpImage.onerror = () => {
+        toast.pop()
+
+        console.warn("Reader error")
+        toast.push("Cannot read the selected file")
       }
     }
   }
@@ -48,24 +78,43 @@
   }
 
   async function sendImageServer() {
-    try {
-      // await fetch(url, {
-      //     signal: controller.signal
-      // })
-
-      await new Promise((r) => setTimeout(r, 2000))
-      serverResponse = "TEST"
-    } catch (err) {
-      if (err instanceof Error && err.name !== "AbortError") {
-        // TODO
-      }
+    inputImg.disabled = true
+    serverResponse = {
+      labelEmotion: "",
+      arrayEmotion: [],
+      idToNames: {},
     }
-  }
 
-  function reset() {
-    image = null
-    serverResponse = ""
-    controller.abort()
+    const fileImage = getFileImage(inputImg)
+    console.debug("FileImage", fileImage)
+    if (!fileImage) {
+      return console.warn("No FileImage to send")
+    }
+
+    try {
+      const formData = new FormData()
+      formData.append("file", fileImage)
+
+      const url = `${import.meta.env.VITE_BACKEND_URL}/upload`
+      const response = (await fetch(url, {
+        method: "POST",
+        body: formData,
+      }).then((res) => res.json())) as ServerResponse
+
+      serverResponse = response
+    } catch (err) {
+      console.error("An error occurred", err)
+
+      if (err instanceof Error) {
+        toast.push("An error occurred: " + err.message, {
+          initial: 0,
+          next: 0,
+          dismissable: false,
+        })
+      }
+    } finally {
+      inputImg.disabled = false
+    }
   }
 </script>
 
@@ -80,7 +129,7 @@
       <h5>Supported: angry, disgust, fear, joy, sad, surprise</h5>
     </div>
 
-    <div class="col-6 mx-auto">
+    <div class="col-12 col-md-6 mx-auto">
       <input
         class="form-control"
         type="file"
@@ -97,16 +146,25 @@
           src={image.src}
           class="img-fluid"
           alt="Upload preview"
-          on:click={() => inputImg.click()}
         />
       </div>
 
       <div class="mt-3">
-        {#if !serverResponse}
+        {#if isValidServerResponse()}
+          <p class="fw-bold">{serverResponse.labelEmotion}</p>
+          <ul class="list-group mx-auto col-12 col-md-6">
+            {#each serverResponse.arrayEmotion as num, i}
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+              >
+                {serverResponse.idToNames[i]}
+                <span class="badge bg-primary rounded-pill">{num}</span>
+              </li>
+            {/each}
+          </ul>
+        {:else}
           <div class="spinner-border text-primary" role="status" />
           <p class="fst-italic fw-light">Waiting for server response...</p>
-        {:else}
-          <p class="fw-bold">{serverResponse}</p>
         {/if}
       </div>
     {/if}
