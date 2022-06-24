@@ -2,8 +2,8 @@
 
 ## Dev
 - pip install -r requirements.txt
-- python -m flask run
+- ./fer_secondary.bat
 
 # Prod
 - pip install -r requirements.txt && pip install waitress
-- waitress-serve --port=5000 --call fer_secondary:create_app
+- export FLASK_APP=fer_secondary FLASK_ENV=production FLASK_DEBUG=on && waitress-serve --port=5000 --call fer_secondary:create_app
