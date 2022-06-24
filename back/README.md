@@ -1,6 +1,9 @@
-# kahoot_like
-Create the python environment :
+# FER_Secondary
 
-pip install virtualenv
-python -m virtualenv env
-launch : fer_secondary.bat
+## Dev
+- pip install -r requirements.txt
+- python -m flask run
+
+# Prod
+- pip install -r requirements.txt && pip install waitress
+- waitress-serve --port=5000 --call fer_secondary:create_app

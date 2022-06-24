@@ -1,7 +1,13 @@
 services:
+  fer_secondary_back:
+    container_name: c_fer_secondary_back
+    restart: unless-stopped
+    build: ./back
+    ports:
+      - "4007:5000"
   fer_secondary_front:
     container_name: c_fer_secondary_front
     restart: unless-stopped
     build: ./front
     ports:
-      - "4007:3000"
+      - "4008:3000"
