@@ -2,7 +2,7 @@
   import { SvelteToast, toast } from "@zerodevx/svelte-toast"
 
   interface ServerResponse {
-    labelEmotion: string
+    guessEmotion: number
     arrayEmotion: Array<number>
     idToNames: Record<number, string>
   }
@@ -11,16 +11,12 @@
   let image: HTMLImageElement | null
 
   let serverResponse: ServerResponse = {
-    labelEmotion: "",
+    guessEmotion: NaN,
     arrayEmotion: [],
     idToNames: {},
   }
 
-  $: isValidServerResponse = () => {
-    return (
-      !!serverResponse.labelEmotion && serverResponse.arrayEmotion.length > 0
-    )
-  }
+  $: isValidServerResponse = () => !isNaN(serverResponse.guessEmotion)
 
   const getFileImage = (input: HTMLInputElement) => {
     if (!input?.files || input.files.length == 0) return null
@@ -80,7 +76,7 @@
   async function sendImageServer() {
     inputImg.disabled = true
     serverResponse = {
-      labelEmotion: "",
+      guessEmotion: NaN,
       arrayEmotion: [],
       idToNames: {},
     }
@@ -121,7 +117,7 @@
 <div class="jumbotron d-flex align-items-center">
   <div class="container text-center">
     <div class="m-3">
-      <img src="/logo.png" height="192" alt="Kingston University Logo" />
+      <img src="/logo.png" height="160" alt="Kingston University Logo" />
     </div>
 
     <div class="m-3">
@@ -151,15 +147,20 @@
 
       <div class="mt-3">
         {#if isValidServerResponse()}
-          <p class="fw-bold">{serverResponse.labelEmotion}</p>
+          <p class="fw-bold">
+            {serverResponse.idToNames[serverResponse.guessEmotion]}
+            ({serverResponse.arrayEmotion[serverResponse.guessEmotion]})
+          </p>
           <ul class="list-group mx-auto col-12 col-md-6">
             {#each serverResponse.arrayEmotion as num, i}
-              <li
-                class="list-group-item d-flex justify-content-between align-items-center"
-              >
-                {serverResponse.idToNames[i]}
-                <span class="badge bg-primary rounded-pill">{num}</span>
-              </li>
+              {#if i !== serverResponse.guessEmotion}
+                <li
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  {serverResponse.idToNames[i]}
+                  <span class="badge bg-primary rounded-pill">{num}</span>
+                </li>
+              {/if}
             {/each}
           </ul>
         {:else}

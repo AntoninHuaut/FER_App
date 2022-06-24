@@ -1,9 +1,19 @@
+const { randomInt } = require("crypto")
 const express = require("express")
 const formidable = require("express-formidable")
 const path = require("path")
 
 const app = express()
 const port = 4007
+
+const idToNames = {
+  0: "Angry",
+  1: "Disgust",
+  2: "Fear",
+  3: "Joy",
+  4: "Sad",
+  5: "Surprise",
+}
 
 app.use(
   formidable({
@@ -18,16 +28,9 @@ app.post("/upload", (req, res) => {
   console.log("Files " + JSON.stringify(req.files)) // contains data about file fields
   setTimeout(() => {
     res.send({
-      labelEmotion: "Joy",
-      arrayEmotion: [4, 6, 7],
-      idToNames: {
-        0: "Angry",
-        1: "Disgust",
-        2: "Fear",
-        3: "Joy",
-        4: "Sad",
-        5: "Surprise",
-      },
+      idToNames: idToNames,
+      guessEmotion: randomInt(Object.keys(idToNames).length),
+      arrayEmotion: Object.keys(idToNames).map((_) => randomInt(1000) / 1000),
     })
   }, 250)
 })
