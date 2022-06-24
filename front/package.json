@@ -1,5 +1,5 @@
 {
-	"name": "emotion_front",
+	"name": "fer_secondary_front",
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "svelte-kit dev",

@@ -1,6 +1,6 @@
 services:
-  emotion_front:
-    container_name: c_emotion_front
+  fer_secondary_front:
+    container_name: c_fer_secondary_front
     restart: unless-stopped
     build: ./front
     ports:
