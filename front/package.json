@@ -11,7 +11,7 @@
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/adapter-node": "next",
 		"@sveltejs/kit": "next",
 		"@zerodevx/svelte-toast": "^0.7.2",
 		"svelte": "^3.44.0",
