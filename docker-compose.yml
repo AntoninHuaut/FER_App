@@ -1,0 +1,7 @@
+services:
+  emotion_front:
+    container_name: c_emotion_front
+    restart: unless-stopped
+    build: ./front
+    ports:
+      - "4007:3000"
