@@ -1,22 +1,12 @@
 <script lang="ts">
   import { SvelteToast, toast } from "@zerodevx/svelte-toast"
+  import type { ServerResponse } from "../stores/fer_api"
+  import { serverData } from "../stores/fer_api"
 
-  interface ServerResponse {
-    guessEmotion: number
-    arrayEmotion: Array<number>
-    idToNames: Record<number, string>
-  }
+  const API_UPLOAD_URL = `${import.meta.env.VITE_BACKEND_URL}/upload`
 
   let inputImg: HTMLInputElement
-  let image: HTMLImageElement | null
-
-  let serverResponse: ServerResponse = {
-    guessEmotion: NaN,
-    arrayEmotion: [],
-    idToNames: {},
-  }
-
-  $: isValidServerResponse = () => !isNaN(serverResponse.guessEmotion)
+  let imageSrc: string | null
 
   const getFileImage = (input: HTMLInputElement) => {
     if (!input?.files || input.files.length == 0) return null
@@ -39,21 +29,15 @@
       }
 
       tmpImage.src = fileReader.result.toString()
-      tmpImage.onload = () => {
-        toast.pop()
-
-        if (!isImgValid(tmpImage)) {
-          console.warn("Invalid image selected")
-        } else {
-          image = tmpImage
-          sendImageServer()
-        }
-      }
       tmpImage.onerror = () => {
-        toast.pop()
-
         console.warn("Reader error")
         toast.push("Cannot read the selected file")
+      }
+      tmpImage.onload = () => {
+        if (!isImgValid(tmpImage)) return console.warn("Invalid image selected")
+
+        imageSrc = tmpImage.src
+        sendImageServer()
       }
     }
   }
@@ -74,42 +58,27 @@
   }
 
   async function sendImageServer() {
-    inputImg.disabled = true
-    serverResponse = {
-      guessEmotion: NaN,
-      arrayEmotion: [],
-      idToNames: {},
-    }
+    serverData.resetData()
 
     const fileImage = getFileImage(inputImg)
-    console.debug("FileImage", fileImage)
-    if (!fileImage) {
-      return console.warn("No FileImage to send")
-    }
+    if (!fileImage) return console.warn("No FileImage to send")
+
+    serverData.setLoading(true)
+    const formData = new FormData()
+    formData.append("file", fileImage)
 
     try {
-      const formData = new FormData()
-      formData.append("file", fileImage)
-
-      const url = `${import.meta.env.VITE_BACKEND_URL}/upload`
-      const response = (await fetch(url, {
+      const response: ServerResponse = await fetch(API_UPLOAD_URL, {
         method: "POST",
         body: formData,
-      }).then((res) => res.json())) as ServerResponse
+      }).then((res) => res.json())
 
-      serverResponse = response
+      serverData.setData(response)
     } catch (err) {
       console.error("An error occurred", err)
-
-      if (err instanceof Error) {
-        toast.push("An error occurred: " + err.message, {
-          initial: 0,
-          next: 0,
-          dismissable: false,
-        })
-      }
+      serverData.setError(err instanceof Error ? err : new Error(`${err}`))
     } finally {
-      inputImg.disabled = false
+      serverData.setLoading(false)
     }
   }
 </script>
@@ -130,42 +99,47 @@
         class="form-control"
         type="file"
         id="inputImg"
+        disabled={$serverData.loading}
         on:change={onFileSelected}
         bind:this={inputImg}
       />
     </div>
 
-    {#if image}
+    {#if imageSrc}
       <div class="mt-5">
         <img
           id="imgPreview"
-          src={image.src}
+          src={imageSrc}
           class="img-fluid"
           alt="Upload preview"
         />
       </div>
 
       <div class="mt-3">
-        {#if isValidServerResponse()}
+        {#if $serverData.loading}
+          <div class="spinner-border text-primary" role="status" />
+          <p class="fst-italic fw-light">Waiting for server response...</p>
+        {:else if $serverData.error}
+          <p class="text-danger">
+            {$serverData.error.message}
+          </p>
+        {:else if $serverData.data.arrayEmotion.length > 0}
           <p class="fw-bold">
-            {serverResponse.idToNames[serverResponse.guessEmotion]}
-            ({serverResponse.arrayEmotion[serverResponse.guessEmotion]})
+            {$serverData.data.idToNames[$serverData.data.guessEmotion]}
+            ({$serverData.data.arrayEmotion[$serverData.data.guessEmotion]})
           </p>
           <ul class="list-group mx-auto col-12 col-md-6">
-            {#each serverResponse.arrayEmotion as num, i}
-              {#if i !== serverResponse.guessEmotion}
+            {#each $serverData.data.arrayEmotion as num, i}
+              {#if i !== $serverData.data.guessEmotion}
                 <li
                   class="list-group-item d-flex justify-content-between align-items-center"
                 >
-                  {serverResponse.idToNames[i]}
+                  {$serverData.data.idToNames[i]}
                   <span class="badge bg-primary rounded-pill">{num}</span>
                 </li>
               {/if}
             {/each}
           </ul>
-        {:else}
-          <div class="spinner-border text-primary" role="status" />
-          <p class="fst-italic fw-light">Waiting for server response...</p>
         {/if}
       </div>
     {/if}
