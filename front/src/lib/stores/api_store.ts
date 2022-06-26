@@ -1,10 +1,7 @@
-import { writable } from 'svelte/store'
+import { get, writable } from 'svelte/store'
+import { imgBlob } from '$lib/stores/app_store'
 
-export interface ServerData {
-    loading: boolean
-    error?: Error
-    data: ServerResponse
-}
+const API_UPLOAD_URL = `${import.meta.env.VITE_BACKEND_URL}/upload`
 
 export interface ServerResponse {
     guessEmotion: number
@@ -12,32 +9,34 @@ export interface ServerResponse {
     idToNames: Record<number, string>
 }
 
-const emptyServerData = (): ServerData => {
-    return {
-        loading: false,
-        data: {
-            guessEmotion: 0,
-            arrayEmotion: [],
-            idToNames: {}
-        }
+const loading = writable(false)
+const error = writable<Error | undefined>()
+const data = writable<ServerResponse | undefined>()
+
+function reset() {
+    data.set(undefined)
+    error.set(undefined)
+}
+
+async function send() {
+    reset()
+    loading.set(true)
+
+    const formData = new FormData()
+    formData.append("file", get(imgBlob), "file.png")
+
+    try {
+        const response = await fetch(API_UPLOAD_URL, {
+            method: "POST",
+            body: formData,
+        })
+        data.set(await response.json())
+    } catch (err) {
+        console.error("An error occurred", err)
+        error.set(err instanceof Error ? err : new Error(`${err}`))
+    } finally {
+        loading.set(false)
     }
 }
 
-const { subscribe, set, update } = writable(emptyServerData())
-
-export const serverData = {
-    subscribe,
-    setLoading: (loading: boolean) => update(self => {
-        self.loading = loading
-        return self
-    }),
-    setData: (data: ServerResponse) => update(self => {
-        self.data = data
-        return self
-    }),
-    setError: (error: Error) => update(self => {
-        self.error = error
-        return self
-    }),
-    resetData: () => update(_ => emptyServerData())
-}
+export { data, loading, error, send, reset }

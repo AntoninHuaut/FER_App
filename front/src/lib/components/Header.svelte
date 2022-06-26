@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { help } from "$lib/stores/help_store"
+  import { loading } from "$lib/stores/api_store"
+  import { help } from "$lib/stores/preference_store"
 </script>
 
 <div class="m-3">
@@ -16,13 +17,14 @@
 
     {#if !$help}
       <div class="ms-3">
-        <a
+        <button
           href={"#"}
           class="btn btn-outline-primary btn-sm"
+          disabled={$loading}
           on:click={() => help.set(true)}
         >
           Help?
-        </a>
+        </button>
       </div>
     {/if}
   </div>

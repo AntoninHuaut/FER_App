@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { help } from "$lib/stores/help_store"
+  import { help } from "$lib/stores/preference_store"
 </script>
 
 <div>

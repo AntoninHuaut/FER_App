@@ -25,7 +25,6 @@ app.use(
 )
 
 app.post("/upload", (req, res) => {
-  console.log("Files " + JSON.stringify(req.files)) // contains data about file fields
   setTimeout(() => {
     res.send({
       idToNames: idToNames,
