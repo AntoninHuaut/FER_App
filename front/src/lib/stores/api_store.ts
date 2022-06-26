@@ -22,10 +22,15 @@ async function send() {
     reset()
     loading.set(true)
 
-    const formData = new FormData()
-    formData.append("file", get(imgBlob), "file.png")
-
     try {
+        const imgBlobVal = get(imgBlob)
+        if (!imgBlobVal) {
+            return new Error("No image to send")
+        }
+
+        const formData = new FormData()
+        formData.append("file", imgBlobVal, "file.png")
+
         const response = await fetch(API_UPLOAD_URL, {
             method: "POST",
             body: formData,

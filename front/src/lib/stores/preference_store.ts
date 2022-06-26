@@ -1,22 +1,19 @@
 import { browser } from '$app/env'
 import { writable } from 'svelte/store'
+import type { Writable } from 'svelte/store'
 
-const helpKey = "help"
-const helpDefaultValue = 'true'
-const helpInitialValue = browser ? window.localStorage.getItem(helpKey) ?? helpDefaultValue : helpDefaultValue
-
-const useWebcamKey = "useWebcam"
-const useWebcamDefaultValue = 'true'
-const useWebcamInitialValue = browser ? window.localStorage.getItem(useWebcamKey) ?? useWebcamDefaultValue : useWebcamDefaultValue
-
-export const help = writable(helpInitialValue === 'true')
-export const useWebcam = writable(useWebcamInitialValue === 'true')
-
-function checkChange(key: string, value: any) {
-    if (browser) {
-        window.localStorage.setItem(key, value)
-    }
+function createBoolPref(key: string, defaultValue: boolean) {
+    const initialValue = browser ? window.localStorage.getItem(key) ?? `${defaultValue}` : `${defaultValue}`
+    const store = writable(initialValue === 'true')
+    store.subscribe((value) => {
+        if (browser) {
+            window.localStorage.setItem(key, `${value}`)
+        }
+    })
+    return store
 }
 
-help.subscribe((value) => checkChange(helpKey, value))
-useWebcam.subscribe((value) => checkChange(useWebcamKey, value))
+const help = createBoolPref("help", true)
+const useWebcam = createBoolPref("useWebcam", true)
+
+export { help, useWebcam }

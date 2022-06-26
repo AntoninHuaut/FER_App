@@ -39,7 +39,7 @@
 
   async function takeScreenshot() {
     const context = canvas.getContext("2d")
-    if (!context) return
+    if (!context) return console.warn("Unable to get canvas 2D context")
 
     context.drawImage(
       video,
