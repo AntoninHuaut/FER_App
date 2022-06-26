@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SvelteToast, toast } from "@zerodevx/svelte-toast"
-  import type { ServerResponse } from "../stores/api_store"
-  import { serverData } from "../stores/api_store"
+  import type { ServerResponse } from "$lib/stores/api_store"
+  import { serverData } from "$lib/stores/api_store"
 
   const API_UPLOAD_URL = `${import.meta.env.VITE_BACKEND_URL}/upload`
 

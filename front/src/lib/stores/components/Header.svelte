@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { help } from "../stores/help_store"
+  import { help } from "$lib/stores/help_store"
 </script>
 
 <div class="m-3">
