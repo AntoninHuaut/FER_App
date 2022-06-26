@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "cross-env VITE_BACKEND_URL=http://localhost:4007 svelte-kit dev",
-		"build": "svelte-kit build",
+		"build": "cross-env VITE_BACKEND_URL=https://ferapi.antoninhuaut.fr svelte-kit build",
 		"package": "svelte-kit package",
 		"preview": "svelte-kit preview",
 		"prepare": "svelte-kit sync",

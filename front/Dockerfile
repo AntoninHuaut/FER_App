@@ -22,7 +22,5 @@ WORKDIR /app
 COPY --from=0 /app/package*.json ./
 COPY --from=0 /app/build ./build
 
-ENV VITE_BACKEND_URL=https://ferapi.antoninhuaut.fr
-
 EXPOSE 3000
 CMD ["node", "./build"]
