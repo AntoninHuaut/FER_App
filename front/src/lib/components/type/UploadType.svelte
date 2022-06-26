@@ -88,3 +88,9 @@
     />
   </div>
 {/if}
+
+<style>
+  #imgPreview {
+    max-height: 512px;
+  }
+</style>

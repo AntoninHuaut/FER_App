@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "../app.css"
   import { SvelteToast } from "@zerodevx/svelte-toast"
 
   import Header from "$lib/components/Header.svelte"
@@ -20,20 +21,3 @@
 <Result />
 
 <SvelteToast options={{ reversed: true, intro: { y: 192 } }} />
-
-<style>
-  :root {
-    --toastContainerTop: auto;
-    --toastContainerRight: auto;
-    --toastContainerBottom: 8rem;
-    --toastWidth: 25rem;
-    --toastContainerLeft: calc(50vw - 12.5rem);
-    --toastBackground: #f56565;
-    --toastBarBackground: #c53030;
-    --toastColor: "black";
-  }
-
-  #imgPreview {
-    max-height: 512px;
-  }
-</style>
