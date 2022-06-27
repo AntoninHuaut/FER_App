@@ -1,7 +1,7 @@
 import { get, writable } from 'svelte/store'
 import { imgBlob } from '$lib/stores/app_store'
 
-const API_UPLOAD_URL = `${import.meta.env.VITE_BACKEND_URL}/upload`
+const API_UPLOAD_URL = `${import.meta.env.VITE_BACKEND_URL}/api/v1/upload`
 
 export interface ServerResponse {
     guessEmotion: number

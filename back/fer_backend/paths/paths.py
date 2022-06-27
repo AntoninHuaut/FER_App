@@ -11,9 +11,17 @@ def home():
 def upload():
     print("Recieved")
     if request.method == 'POST':
-        print("UPLOAD")
         print(request.files['file']) 
-        res = {k:str(v) for k,v in enumerate(test_image(request.files['file']))}
+        prediction = test_image(request.files['file'])
+        idToNames = get_idToNames()
+        guessEmotion = prediction.index(max(prediction))
+        arrayEmotion = [element.item() for element in prediction]
+        res = {
+            'idToNames':idToNames,
+            'guessEmotion':guessEmotion,
+            'arrayEmotion':arrayEmotion
+        }
+        print(res)
         return jsonify(res)
     else : 
         print("UPLOAD ?")
@@ -22,4 +30,15 @@ def upload():
     #Get the image
     #Convert the image
     #Make the prediction test_image(picture)
+
+def get_idToNames():
+    idToNames = {
+        '0':'Angry',
+        '1':'Disgust',
+        '2':'Fear',
+        '3':'Joy',
+        '4':'Sad',
+        '5':'Surprise'
+    }
+    return idToNames
 
