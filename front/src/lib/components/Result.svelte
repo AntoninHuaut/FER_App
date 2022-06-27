@@ -13,7 +13,7 @@
   {:else if $data?.arrayEmotion && $data.arrayEmotion.length > 0}
     <p class="fw-bold">
       {$data.idToNames[$data.guessEmotion]}
-      ({$data.arrayEmotion[$data.guessEmotion]})
+      ({$data.arrayEmotion[$data.guessEmotion].toFixed(5)})
     </p>
     <ul class="list-group mx-auto col-12 col-md-6">
       {#each $data.arrayEmotion as num, i}
@@ -22,7 +22,7 @@
             class="list-group-item d-flex justify-content-between align-items-center"
           >
             {$data.idToNames[i]}
-            <span class="badge bg-primary rounded-pill">{num}</span>
+            <span class="badge bg-primary rounded-pill">{num.toFixed(5)}</span>
           </li>
         {/if}
       {/each}
