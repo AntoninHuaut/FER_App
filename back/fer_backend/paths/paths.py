@@ -11,16 +11,13 @@ def home():
 def upload():
     print("Recieved")
     if request.method == 'POST':
+        print("UPLOAD")
         print(request.files['file']) 
         res = {k:str(v) for k,v in enumerate(test_image(request.files['file']))}
-        response = jsonify(res)
-        print(res)
-        response.headers.add("Access-Control-Allow-Origin","http://localhost:3000")
-        return response
+        return jsonify(res)
     else : 
-        response = jsonify("GET on UPLOAD")
-        response.headers.add("Access-Control-Allow-Origin","http://localhost:3000")
-        return response
+        print("UPLOAD ?")
+        return jsonify("GET on UPLOAD")
     #print(request.form)
     #Get the image
     #Convert the image
