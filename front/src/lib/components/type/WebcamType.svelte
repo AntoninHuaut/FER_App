@@ -3,7 +3,7 @@
   import { loading, send, reset } from "$lib/stores/api_store"
   import { webcamLoad, imgBlob } from "$lib/stores/app_store"
 
-  const maxVideoWidth = 512
+  const MAX_VIDEO_WIDTH = 512
 
   let video: HTMLVideoElement
   let canvas: HTMLCanvasElement
@@ -22,7 +22,7 @@
   }
 
   function setupVideo() {
-    const videoWidth = Math.min(video.videoWidth, maxVideoWidth)
+    const videoWidth = Math.min(video.videoWidth, MAX_VIDEO_WIDTH)
     const videoHeight = video.videoHeight / (video.videoWidth / videoWidth)
     const canvasWidth = Math.min(videoWidth, videoHeight)
     const canvasHeight = canvasWidth
