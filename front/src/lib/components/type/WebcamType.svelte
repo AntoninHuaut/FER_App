@@ -7,15 +7,22 @@
 
   let video: HTMLVideoElement
   let canvas: HTMLCanvasElement
+  let screenshotInterval: number
+  let scale: number = 2
 
-  navigator.mediaDevices
-    .getUserMedia({ video: true, audio: false })
-    .then(createStream)
-    .catch((err) => console.error(err))
+  onMount(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: false })
+      .then(initUserMedia)
+      .catch((err) => console.error(err))
 
-  onMount(() => () => reset())
+    return () => {
+      clearInterval(screenshotInterval)
+      reset()
+    }
+  })
 
-  function createStream(stream: MediaStream) {
+  function initUserMedia(stream: MediaStream) {
     video.srcObject = stream
     video.addEventListener("canplay", setupVideo, false)
     webcamLoad.set(true)
@@ -35,22 +42,24 @@
     canvas.height = canvasHeight
 
     video.play()
+    screenshotInterval = window.setInterval(() => takeScreenshot(), 50)
   }
 
   async function takeScreenshot() {
     const context = canvas.getContext("2d")
     if (!context) return console.warn("Unable to get canvas 2D context")
 
+    context.scale(scale, scale)
     context.drawImage(
       video,
-      (canvas.width - video.width) / 2,
-      (canvas.height - video.height) / 2,
+      (canvas.width / scale - video.width) / 2,
+      (canvas.height / scale - video.height) / 2,
       video.width,
       video.height
     )
+    context.scale(1 / scale, 1 / scale)
 
     imgBlob.set(dataURItoBlob(canvas.toDataURL("image/png")))
-    await send()
   }
 
   function dataURItoBlob(dataURI: string) {
@@ -65,7 +74,22 @@
     <div class="me-3">
       <div class="d-flex flex-column justify-content-center">
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video bind:this={video}>test</video>
+        <video bind:this={video} />
+
+        <div class="input-group">
+          <label for="zoomInput" class="ms-3 me-2">
+            Zoom (x{scale.toFixed(1)})
+          </label>
+          <input
+            id="zoomInput"
+            class="form-range mx-auto w-75 me-3"
+            min={1}
+            max={5}
+            step={0.2}
+            bind:value={scale}
+            type="range"
+          />
+        </div>
         <p class="mt-1 fs-5">Real time video</p>
       </div>
     </div>
@@ -78,15 +102,17 @@
     </div>
   </div>
 
-  <button
-    class="btn btn-primary mb-2"
-    on:click={takeScreenshot}
-    disabled={$loading}
-  >
-    Take picture
+  <button class="btn btn-primary mb-2" on:click={send} disabled={$loading}>
+    Analyse screenshot
   </button>
 </div>
 
 {#if !$webcamLoad}
   <h2 class="fw-light">Please give the website access to your camera</h2>
 {/if}
+
+<style>
+  #zoomInput {
+    border: none;
+  }
+</style>

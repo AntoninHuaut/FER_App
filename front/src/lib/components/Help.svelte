@@ -7,8 +7,9 @@
     When using image upload or webcam, it is imperative that there is only your
     face with as little background as possible and the image must be square
     (same width/height).
+    <br />In addition, accessories should not appear (glasses, ...) and you have
+    to minimize the hair by zooming in on the face
     <br />If you use a webcam, the picture will be cropped from the center.
-    <br />In addition, you should not wear accessories (glasses, ...).
   </p>
 
   <a href={"#"} class="btn btn-primary" on:click={() => help.set(false)}>
