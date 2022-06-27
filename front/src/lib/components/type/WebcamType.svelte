@@ -13,6 +13,7 @@
 
   $: if (video && canvas && windowInnerWidth) {
     resizeMedia()
+    console.log(windowInnerWidth)
   }
 
   onMount(() => {
@@ -36,7 +37,7 @@
   function resizeMedia() {
     const videoWidth = Math.min(
       video.videoWidth,
-      Math.min(MAX_VIDEO_WIDTH, window.innerWidth)
+      Math.min(MAX_VIDEO_WIDTH, window.innerWidth - 32)
     )
     const videoHeight = video.videoHeight / (video.videoWidth / videoWidth)
 
