@@ -2,7 +2,7 @@
   import { help } from "$lib/stores/preference_store"
 </script>
 
-<div class="w-50 mx-auto">
+<div class="col col-lg-9 mx-auto">
   <p class="fs-6 text-start">
     When using image upload or webcam, it is imperative that there is only your
     face with as little background as possible and the image must be square

@@ -9,6 +9,11 @@
   let canvas: HTMLCanvasElement
   let screenshotInterval: number
   let scale: number = 2
+  let windowInnerWidth: number
+
+  $: if (video && canvas && windowInnerWidth) {
+    resizeMedia()
+  }
 
   onMount(() => {
     navigator.mediaDevices
@@ -24,13 +29,17 @@
 
   function initUserMedia(stream: MediaStream) {
     video.srcObject = stream
-    video.addEventListener("canplay", setupVideo, false)
+    video.addEventListener("canplay", setupMedia, false)
     webcamLoad.set(true)
   }
 
-  function setupVideo() {
-    const videoWidth = Math.min(video.videoWidth, MAX_VIDEO_WIDTH)
+  function resizeMedia() {
+    const videoWidth = Math.min(
+      video.videoWidth,
+      Math.min(MAX_VIDEO_WIDTH, window.innerWidth)
+    )
     const videoHeight = video.videoHeight / (video.videoWidth / videoWidth)
+
     const canvasWidth = Math.min(videoWidth, videoHeight)
     const canvasHeight = canvasWidth
 
@@ -40,7 +49,10 @@
     canvas.setAttribute("height", "" + canvasHeight)
     canvas.width = canvasWidth
     canvas.height = canvasHeight
+  }
 
+  function setupMedia() {
+    resizeMedia()
     video.play()
     screenshotInterval = window.setInterval(() => takeScreenshot(), 50)
   }
@@ -68,6 +80,8 @@
     return new Blob([new Uint8Array(array)], { type: "image/png" })
   }
 </script>
+
+<svelte:window bind:innerWidth={windowInnerWidth} />
 
 <div hidden={!$webcamLoad}>
   <div class="d-flex flex-column flex-lg-row justify-content-center">
