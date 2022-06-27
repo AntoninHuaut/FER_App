@@ -1,7 +1,7 @@
 from fer_backend import create_app
 from flask_cors import CORS
 app = create_app(debug=True)
-CORS(app, resources={r"/api/v1":{"origins":"https://fer.antoninhuaut.fr/"}})
+CORS(app, resources={r"/api/v1": {"origins": "https://fer.antoninhuaut.fr/"}})
 
 if __name__ == '__main__':
     from waitress import serve
