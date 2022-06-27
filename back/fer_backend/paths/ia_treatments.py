@@ -9,6 +9,7 @@ from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard, EarlyStoppi
 from keras.utils import load_img, plot_model
 from PIL import Image, ImageOps
 
+tiny_emotion_set = None
 
 def get_model(input_size, classes):
     #initializing the CNN
@@ -52,9 +53,12 @@ def load_picture(picture):
 
 def test_image(raw_picture):
     # pretretement
+    global tiny_emotion_set
     row, col = 48, 48
     classes = 6
-    tiny_emotion_set = get_model((row, col, 1), classes)
+    if tiny_emotion_set == None :
+        tiny_emotion_set = get_model((row, col, 1), classes)
+        
     tiny_emotion_set.load_weights(
         '../../static/model_weights/backup/tiny_emotion-v6/tiny_emotion_secondary_bestweight.h5')
 
