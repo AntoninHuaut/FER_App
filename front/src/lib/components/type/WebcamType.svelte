@@ -70,19 +70,23 @@
 </script>
 
 <div hidden={!$webcamLoad}>
-  <div class="d-flex justify-content-center">
-    <div class="me-3">
+  <div class="d-flex flex-column flex-lg-row justify-content-center">
+    <div class="me-0 me-lg-3">
       <div class="d-flex flex-column justify-content-center">
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video bind:this={video} />
+        <div>
+          <video bind:this={video} />
+        </div>
 
-        <div class="input-group">
+        <p class="mt-1 mb-1 fs-5">Real time video</p>
+
+        <div class="form-group mx-auto">
           <label for="zoomInput" class="ms-3 me-2">
             Zoom (x{scale.toFixed(1)})
           </label>
           <input
             id="zoomInput"
-            class="form-range mx-auto w-75 me-3"
+            class="form-range me-3 align-bottom"
             min={1}
             max={5}
             step={0.2}
@@ -90,11 +94,10 @@
             type="range"
           />
         </div>
-        <p class="mt-1 fs-5">Real time video</p>
       </div>
     </div>
 
-    <div class="ms-3">
+    <div class="mt-3 mt-lg-0">
       <div class="d-flex flex-column justify-content-center">
         <canvas bind:this={canvas} />
         <p class="mt-1 fs-5">Screenshot used</p>
@@ -102,7 +105,11 @@
     </div>
   </div>
 
-  <button class="btn btn-primary mb-2" on:click={send} disabled={$loading}>
+  <button
+    class="btn btn-primary mt-2 mt-lg-4 mb-2"
+    on:click={send}
+    disabled={$loading}
+  >
     Analyse screenshot
   </button>
 </div>
@@ -114,5 +121,6 @@
 <style>
   #zoomInput {
     border: none;
+    width: auto;
   }
 </style>
