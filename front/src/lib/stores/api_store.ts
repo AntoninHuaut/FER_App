@@ -35,6 +35,16 @@ async function send() {
             method: "POST",
             body: formData,
         })
+
+        if (!response.ok) {
+            switch (response.status) {
+                case 413:
+                    throw new Error("Image is too large");
+                default:
+                    throw new Error("HTTP status " + response.status);
+            }
+        }
+
         data.set(await response.json())
     } catch (err) {
         console.error("An error occurred", err)
