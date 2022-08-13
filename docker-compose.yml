@@ -1,0 +1,17 @@
+services:
+  fer_secondary_back:
+    container_name: c_fer_secondary_back
+    restart: unless-stopped
+    build: ./back
+    ports:
+      - "4007:5000"
+
+  fer_secondary_front:
+    container_name: c_fer_secondary_front
+    restart: unless-stopped
+    build:
+      context: ./front
+      args:
+        - VITE_BASE_API_URL=${VITE_BASE_API_URL}
+    ports:
+      - "4008:8080"
